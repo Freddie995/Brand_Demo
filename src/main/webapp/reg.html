@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎注册</title>
+    <link href="css/register.css" rel="stylesheet">
+    <style>
+        table td:first-child {
+            color: white;
+        }
+
+        .inputs {
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="form-div" id="form-div">
+        <div class="reg-content">
+            <h1>欢迎注册</h1>
+            <span>已有帐号？</span> <a href="login.html">登录</a>
+        </div>
+        <div id="reg-form">
+            <table>
+                <tr>
+                    <td>用户名</td>
+                    <td class="inputs">
+                        <input name="username" type="text" id="username" v-model="user.username" @blur="checkUsername">
+                        <br>
+                        <span class="err_msg" ref="err_msg" id="err_msg"></span>
+                    </td>
+
+                </tr>
+
+                <tr>
+                    <td>密　码</td>
+                    <td class="inputs">
+                        <input name="password" type="password" id="password" v-model="user.password">
+                        <br>
+                        <span id="password_err" class="err_msg" style="display: none">密码格式有误</span>
+                    </td>
+                </tr>
+
+                <!-- <tr>
+                      <td>验证码</td>
+                        <td class="inputs">
+                            <input name="checkCode" type="text" id="checkCode">
+                            <img id="checkCodeImg" ref="code" src="http://localhost/checkCodeServlet" @click="changeCode">
+                            <a href="#" id="changeImg">看不清？</a>
+                          </td>
+                </tr> -->
+
+            </table>
+
+            <div class="buttons">
+                <input value="注 册" type="submit" id="reg_btn" @click="register">
+            </div>
+            <br class="clear">
+        </div>
+
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script src="js/axios-0.18.0.js"></script>
+    <script src="element-ui/lib/index.js"></script>
+    <link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+    <script>
+        new Vue({
+            el: "#form-div",
+            data() {
+                return {
+                    user: {
+                        username: "",
+                        password: ""
+                    }
+                }
+            },
+            methods: {
+                register() {
+                    var _this = this
+                    axios.post("http://localhost/register", _this.user, { headers: { 'content-type': 'application/x-www-form-urlencoded' } })
+                        .then(resp => {
+                            if (resp.data == "success") {
+                                _this.$message({
+                                    message: "恭喜你，注册成功",
+                                    type: "success"
+                                })
+                                console.log("tiaoz")
+                                location.href = "login.html"
+                            }
+                            else {
+                                _this.$message({
+                                    message: "注册失败",
+                                    type: "error"
+                                })
+                            }
+                        })
+                },
+                checkUsername() {
+                    var _this = this
+                    axios.post("http://localhost/checkUser", _this.user.username, { headers: { 'content-type': 'application/x-www-form-urlencoded' } })
+                        .then(resp => {
+                            if (resp.data == "existed") {
+                                _this.$refs.err_msg.innerHTML = "用户名太受欢迎"
+                            }else{
+                                _this.$refs.err_msg.innerHTML = ""
+                            }
+                        })
+                },
+                changeCode(){
+                    var _this = this
+                   axios.get("http://localhost/checkCodeServlet?"+new Date().getMilliseconds(),{ headers: { 'content-type': 'application/x-www-form-urlencoded' } })
+                   .then(resp=>{
+                       _this.$refs.code.src = resp.data
+                   })
+                }
+            
+
+            }
+
+        })
+    </script>
+</body>
+
+</html>

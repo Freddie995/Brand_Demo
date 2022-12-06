@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>登录系统</title>
+    <link href="css/login.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="loginDiv" style="height: 350px">
+        <div id="form">
+            <h1 id="loginMsg">欢迎登录</h1>
+            <p>用户名:<input id="username" v-model="user.username" name="username" type="text"></p>
+            <p>密　码:<input id="password"  v-model="user.password" name="password" type="password"></p>
+            <p>记住我:<input id="remember" value="1" v-model="user.remember" name="remember" type="checkbox"></p>
+            <div id="subDiv">
+                <input type="submit" class="button" value="login up" @click="login">
+                <input type="reset" class="button" value="reset">&nbsp;&nbsp;&nbsp;
+                <a href="reg.html">没有账号？</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script src="js/axios-0.18.0.js"></script>
+    <script src="element-ui/lib/index.js"></script>
+    <link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+    <script>
+        new Vue({
+            el: "#loginDiv",
+            data() {
+                return {
+                    user: {
+                        username: "",
+                        password: "",
+                        remember: ""
+                    }
+                }
+            },
+            methods: {
+                login() {
+                    var _this = this
+                    axios.post("http://localhost/login", _this.user, { headers: { 'content-type': 'application/x-www-form-urlencoded' } }).then(resp => {
+                        if (resp.data == "success") {
+                            _this.$message({
+                                message: "登录成功",
+                                type: "success"
+                            })
+                            location.href = "brand.html"
+                        } else {
+                            _this.$message({
+                                message: "登录失败",
+                                type: "error"
+                            })
+                        }
+                    })
+
+                }
+            }
+        })
+    </script>
+
+</body>
+
+</html>
